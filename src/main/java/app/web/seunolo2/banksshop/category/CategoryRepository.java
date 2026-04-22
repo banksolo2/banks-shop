@@ -8,4 +8,6 @@ import java.util.Optional;
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long> {
     public Optional<Category> getCategoryByNameIgnoreCase(String name);
+
+    public Boolean existsCategoryByNameIgnoreCase(String name);
 }
