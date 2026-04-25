@@ -14,22 +14,76 @@ import java.util.Objects;
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private ResponseMessage rm;
 
     @Override
-    public List<Category> getAllCategories() {
-        return categoryRepository.findAll();
+    public ResponseMessage getAllCategories() {
+        return ResponseMessage.builder()
+                .type("success")
+                .message("All categories")
+                .object(categoryRepository.findAll())
+                .httpStatus(HttpStatus.OK)
+                .build();
     }
 
     @Override
-    public Category getCategoryById(Long categoryId) {
-        return categoryRepository.findById(categoryId)
-                .orElseThrow(()-> new CategoryNotFoundException("Category with ID "+categoryId+" not found"));
+    public ResponseMessage getCategoryById(Long categoryId) {
+        try {
+            Category category = categoryRepository.findById(categoryId).orElse(null);
+            if (Objects.isNull(category))
+                throw new CategoryNotFoundException("Category with ID " + categoryId + " not found");
+
+            return ResponseMessage.builder()
+                    .type("success")
+                    .message("Category found")
+                    .object(category)
+                    .httpStatus(HttpStatus.FOUND)
+                    .build();
+        }
+        catch(CategoryNotFoundException categoryNotFoundException){
+            return ResponseMessage.builder()
+                    .type("error")
+                    .message(categoryNotFoundException.getMessage())
+                    .httpStatus(HttpStatus.NOT_FOUND)
+                    .build();
+        }
+        catch(Exception ex){
+            return ResponseMessage.builder()
+                    .type("error")
+                    .message(ex.getMessage())
+                    .httpStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .build();
+        }
     }
 
     @Override
-    public Category getCategoryByName(String name) {
-        return categoryRepository.getCategoryByNameIgnoreCase(name)
-                .orElseThrow(()-> new CategoryNotFoundException("Category not found"));
+    public ResponseMessage getCategoryByName(String name) {
+        try {
+            Category category = categoryRepository.getCategoryByNameIgnoreCase(name).orElse(null);
+            if (Objects.isNull(category))
+                throw new CategoryNotFoundException("Category not found");
+
+            return ResponseMessage.builder()
+                    .type("success")
+                    .message("Category found")
+                    .object(category)
+                    .httpStatus(HttpStatus.FOUND)
+                    .build();
+        }
+        catch(CategoryNotFoundException categoryNotFoundException){
+            return ResponseMessage.builder()
+                    .type("error")
+                    .message(categoryNotFoundException.getMessage())
+                    .httpStatus(HttpStatus.NOT_FOUND)
+                    .build();
+        }
+        catch(Exception ex){
+            return ResponseMessage.builder()
+                    .type("error")
+                    .message(ex.getMessage())
+                    .httpStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .build();
+        }
     }
 
     @Override
@@ -66,7 +120,11 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public ResponseMessage updateCategory(Long categoryId, CategoryModel categoryModel) {
         try {
-            Category category = getCategoryById(categoryId);
+            rm = getCategoryById(categoryId);
+            if(rm.getType().equals("error"))
+                return rm;
+
+            Category category = (Category) rm.getObject();
             category.setName(categoryModel.getName());
 
             return ResponseMessage.builder()
@@ -74,13 +132,6 @@ public class CategoryServiceImpl implements CategoryService {
                     .message("Category updated")
                     .object(categoryRepository.save(category))
                     .httpStatus(HttpStatus.OK)
-                    .build();
-        }
-        catch(CategoryNotFoundException categoryNotFoundException){
-            return  ResponseMessage.builder()
-                    .type("error")
-                    .message(categoryNotFoundException.getMessage())
-                    .httpStatus(HttpStatus.NOT_FOUND)
                     .build();
         }
         catch(Exception ex){
@@ -95,19 +146,16 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public ResponseMessage deleteCategory(Long categoryId) {
         try {
-            Category category = getCategoryById(categoryId);
-            categoryRepository.deleteById(categoryId);
+            rm = getCategoryById(categoryId);
+            if(rm.getType().equals("error"))
+                return rm;
+
+            Category category = (Category) rm.getObject();
+            categoryRepository.delete(category);
             return ResponseMessage.builder()
                     .type("success")
                     .message("Category deleted")
                     .httpStatus(HttpStatus.NO_CONTENT)
-                    .build();
-        }
-        catch(CategoryNotFoundException categoryNotFoundException){
-            return ResponseMessage.builder()
-                    .type("error")
-                    .message(categoryNotFoundException.getMessage())
-                    .httpStatus(HttpStatus.NOT_FOUND)
                     .build();
         }
         catch(Exception ex){

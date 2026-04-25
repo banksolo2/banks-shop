@@ -17,7 +17,6 @@ import java.sql.Blob;
 @Builder
 public class ImageModel {
     private Long imageId;
-    private String downloadUrl;
 
     private Long productId;
 }
