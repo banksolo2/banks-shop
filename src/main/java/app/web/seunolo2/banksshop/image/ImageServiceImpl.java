@@ -2,6 +2,7 @@ package app.web.seunolo2.banksshop.image;
 
 import app.web.seunolo2.banksshop.exceptions.ImageNotFoundException;
 import app.web.seunolo2.banksshop.exceptions.ProductNotFoundException;
+import app.web.seunolo2.banksshop.product.Product;
 import app.web.seunolo2.banksshop.product.ProductRepository;
 import app.web.seunolo2.banksshop.product.ProductService;
 import app.web.seunolo2.banksshop.responseMessage.ResponseMessage;
@@ -20,7 +21,7 @@ import java.util.List;
 public class ImageServiceImpl implements ImageService {
 
     private final ImageRepository imageRepository;
-    private final ProductService productService;
+    private final ProductRepository productRepository;
 
     @Override
     public Image getImageById(Long imageId) {
@@ -61,10 +62,11 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public ResponseMessage saveImage(List<MultipartFile> imageFiles, ImageModel imageModel){
+    public ResponseMessage saveImage(List<MultipartFile> imageFiles, Long productId){
         try {
             //check if product with ID exists
-            var product = productService.getById(imageModel.getProductId());
+            Product product = productRepository.findById(productId)
+                    .orElseThrow(()-> new ProductNotFoundException("Product with ID "+productId+" not found"));
             List<Image> images = new ArrayList<>();
             for(MultipartFile imageFile : imageFiles ) {
                  var image =Image.builder()

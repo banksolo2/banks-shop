@@ -21,5 +21,5 @@ public class ProductModel {
     private String description;
     private BigDecimal price;
     private Integer inventory;
-    private Category category;
+    private String category;
 }

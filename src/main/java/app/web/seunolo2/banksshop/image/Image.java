@@ -1,6 +1,7 @@
 package app.web.seunolo2.banksshop.image;
 
 import app.web.seunolo2.banksshop.product.Product;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,5 +24,6 @@ public class Image {
     private String downloadUrl;
     @ManyToOne
     @JoinColumn(name = "product_id")
+    @JsonIgnore
     private Product product;
 }

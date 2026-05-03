@@ -14,7 +14,7 @@ public interface ImageService {
 
     public ResponseMessage deleteImageById(Long imageId);
 
-    public ResponseMessage saveImage(List<MultipartFile> imageFiles, ImageModel imageModel);
+    public ResponseMessage saveImage(List<MultipartFile> imageFiles, Long productId);
 
     public ResponseMessage updateImage(Long imageId, MultipartFile imageFile);
 

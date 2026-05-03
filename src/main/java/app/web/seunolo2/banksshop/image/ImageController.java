@@ -43,8 +43,8 @@ public class ImageController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<ResponseMessage> addImages(@RequestBody ImageModel imageModel, @RequestParam  List<MultipartFile> images){
-        rm = imageService.saveImage(images,imageModel);
+    public ResponseEntity<ResponseMessage> addImages(@RequestParam("productId") Long productId, @RequestParam  List<MultipartFile> images){
+        rm = imageService.saveImage(images,productId);
         return new ResponseEntity<>(rm,rm.getHttpStatus());
     }
 

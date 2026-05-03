@@ -2,6 +2,7 @@ package app.web.seunolo2.banksshop.product;
 
 import app.web.seunolo2.banksshop.category.Category;
 import app.web.seunolo2.banksshop.image.Image;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
